@@ -1,0 +1,377 @@
+{
+  "samples": 7,
+  "generatedFrom": "leetcode 用户 yeechin",
+  "generatedAt": "2026-09-17T06:14:56.512Z",
+  "titles": [
+    "动态规划 + 前缀和：从“枚举间距”一步步推到 dp[n][k]",
+    "贪心（暴力遍历及优化）",
+    "投影 + 区间求交（二维降一维）",
+    "按区间统计贡献",
+    "按位数统计贡献",
+    "二分法：一个都没听过这个名词的人是怎么不小心用上它的",
+    "排序 + 双指针：最符合1KB小脑的解法（虽然打不过哈希表）"
+  ],
+  "skeleton": [
+    {
+      "heading": "思路",
+      "inSamples": 7
+    },
+    {
+      "heading": "解题过程",
+      "inSamples": 7
+    },
+    {
+      "heading": "复杂度",
+      "inSamples": 7
+    },
+    {
+      "heading": "Code",
+      "inSamples": 7
+    }
+  ],
+  "sectionOrder": [
+    "思路",
+    "解题过程",
+    "复杂度",
+    "Code",
+    "总结"
+  ],
+  "stepHeading": {
+    "present": 23,
+    "articles": 7,
+    "samples": [
+      "第一步：暴力为什么写不出来",
+      "第二步：真正决定未来的只有两个数",
+      "第三步：转移看最后一个点",
+      "第四步：那串求和交给前缀和",
+      "第五步：滚动数组降维",
+      "第二步：贪心到底按什么排"
+    ]
+  },
+  "pitfalls": {
+    "present": 4,
+    "samples": [
+      "**第一步：先被两个坑各踹一脚**",
+      "**坑 1：长度是\"至少 k\"，不是\"正好 k\"**",
+      "坑 2：我算成了\"所有回文串的数量\"",
+      "第三步：踩了个坑，== 改 <="
+    ]
+  },
+  "goalQuote": {
+    "present": 7,
+    "samples": [
+      "动态规划：$dp[n][k]$ 表示前 $n$ 个点里选 $k$ 条不重叠线段的方案数，转移里那串连续求和用前缀和 $pre$ 维护",
+      "贪心",
+      "二维降一维（投影 + 区间求交）",
+      "按区间统计贡献"
+    ]
+  },
+  "hasProblemQuote": 7,
+  "length": {
+    "medianChars": 1477,
+    "minChars": 1238,
+    "maxChars": 3219
+  },
+  "codeLangs": [
+    {
+      "lang": "python3",
+      "count": 10
+    },
+    {
+      "lang": "typescript",
+      "count": 2
+    }
+  ],
+  "density": {
+    "codeBlocks": 2.4,
+    "bullets": 6.6,
+    "inlineLatex": 8.7,
+    "blockLatex": 0.9,
+    "boldSpans": 3.4,
+    "tables": 0
+  },
+  "voice": [
+    {
+      "label": "第一人称「我」",
+      "perArticle": 3.1
+    },
+    {
+      "label": "“我一开始 / 最开始”",
+      "perArticle": 0.3
+    },
+    {
+      "label": "“其实 / 说白了”",
+      "perArticle": 0.3
+    },
+    {
+      "label": "“才发现 / 后来发现”",
+      "perArticle": 0.6
+    },
+    {
+      "label": "口语词",
+      "perArticle": 1.1
+    },
+    {
+      "label": "自嘲",
+      "perArticle": 0.7
+    }
+  ],
+  "perArticle": [
+    {
+      "title": "动态规划 + 前缀和：从“枚举间距”一步步推到 dp[n][k]",
+      "chars": 2306,
+      "h1": [
+        "思路",
+        "解题过程",
+        "复杂度",
+        "Code",
+        "总结"
+      ],
+      "h2": [
+        "第一步：暴力为什么写不出来",
+        "第二步：真正决定未来的只有两个数",
+        "第三步：转移看最后一个点",
+        "第四步：那串求和交给前缀和",
+        "第五步：滚动数组降维"
+      ],
+      "h3": [],
+      "steps": [
+        "第一步：暴力为什么写不出来",
+        "第二步：真正决定未来的只有两个数",
+        "第三步：转移看最后一个点",
+        "第四步：那串求和交给前缀和",
+        "第五步：滚动数组降维"
+      ],
+      "pitfalls": [],
+      "fences": [
+        "python3"
+      ],
+      "hasProblemQuote": true,
+      "firstQuote": "动态规划：$dp[n][k]$ 表示前 $n$ 个点里选 $k$ 条不重叠线段的方案数，转移里那串连续求和用前缀和 $pre$ 维护",
+      "inlineLatex": 47,
+      "blockLatex": 6,
+      "bullets": 5,
+      "codeBlocks": 1,
+      "boldSpans": 13,
+      "tableRows": 0
+    },
+    {
+      "title": "贪心（暴力遍历及优化）",
+      "chars": 2959,
+      "h1": [
+        "思路",
+        "解题过程",
+        "复杂度",
+        "Code",
+        "总结"
+      ],
+      "h2": [
+        "**第一步：先被两个坑各踹一脚**",
+        "第二步：贪心到底按什么排",
+        "第三步：把\"不重叠\"翻译成\"截断范围\"",
+        "第四步：只检查 k 和 k+1 就够了"
+      ],
+      "h3": [
+        "**坑 1：长度是\"至少 k\"，不是\"正好 k\"**",
+        "坑 2：我算成了\"所有回文串的数量\""
+      ],
+      "steps": [
+        "第二步：贪心到底按什么排",
+        "第三步：把\"不重叠\"翻译成\"截断范围\"",
+        "第四步：只检查 k 和 k+1 就够了"
+      ],
+      "pitfalls": [
+        "**第一步：先被两个坑各踹一脚**",
+        "**坑 1：长度是\"至少 k\"，不是\"正好 k\"**",
+        "坑 2：我算成了\"所有回文串的数量\""
+      ],
+      "fences": [
+        "python3",
+        "python3"
+      ],
+      "hasProblemQuote": true,
+      "firstQuote": "贪心",
+      "inlineLatex": 4,
+      "blockLatex": 0,
+      "bullets": 4,
+      "codeBlocks": 4,
+      "boldSpans": 11,
+      "tableRows": 0
+    },
+    {
+      "title": "投影 + 区间求交（二维降一维）",
+      "chars": 1477,
+      "h1": [
+        "思路",
+        "解题过程",
+        "复杂度",
+        "Code",
+        "总结："
+      ],
+      "h2": [
+        "第一步：先把矩形压扁成两条线",
+        "第二步：区间求交",
+        "第三步：这里是 < 不是 <="
+      ],
+      "h3": [],
+      "steps": [
+        "第一步：先把矩形压扁成两条线",
+        "第二步：区间求交",
+        "第三步：这里是 < 不是 <="
+      ],
+      "pitfalls": [],
+      "fences": [
+        "python3",
+        "typescript"
+      ],
+      "hasProblemQuote": true,
+      "firstQuote": "二维降一维（投影 + 区间求交）",
+      "inlineLatex": 2,
+      "blockLatex": 0,
+      "bullets": 8,
+      "codeBlocks": 2,
+      "boldSpans": 0,
+      "tableRows": 0
+    },
+    {
+      "title": "按区间统计贡献",
+      "chars": 1238,
+      "h1": [
+        "思路",
+        "解题过程",
+        "复杂度",
+        "Code"
+      ],
+      "h2": [
+        "第一步：确定每个区间的左右边界",
+        "第三步：循环到 n 装不下为止"
+      ],
+      "h3": [
+        "第二步：区间长度 × 逗号数"
+      ],
+      "steps": [
+        "第一步：确定每个区间的左右边界",
+        "第三步：循环到 n 装不下为止"
+      ],
+      "pitfalls": [],
+      "fences": [
+        "python3",
+        "python3",
+        "python3"
+      ],
+      "hasProblemQuote": true,
+      "firstQuote": "按区间统计贡献",
+      "inlineLatex": 2,
+      "blockLatex": 0,
+      "bullets": 7,
+      "codeBlocks": 4,
+      "boldSpans": 0,
+      "tableRows": 0
+    },
+    {
+      "title": "按位数统计贡献",
+      "chars": 1322,
+      "h1": [
+        "思路",
+        "解题过程",
+        "复杂度",
+        "Code"
+      ],
+      "h2": [
+        "数学观察 + 按层计数",
+        "第一步：先看我走死的那条路",
+        "第二步：换个维度数（顿悟）​",
+        "第三步：翻译成代码"
+      ],
+      "h3": [],
+      "steps": [
+        "第一步：先看我走死的那条路",
+        "第二步：换个维度数（顿悟）​",
+        "第三步：翻译成代码"
+      ],
+      "pitfalls": [],
+      "fences": [
+        "python3"
+      ],
+      "hasProblemQuote": true,
+      "firstQuote": "你选用何种方法解题？",
+      "inlineLatex": 2,
+      "blockLatex": 0,
+      "bullets": 9,
+      "codeBlocks": 1,
+      "boldSpans": 0,
+      "tableRows": 0
+    },
+    {
+      "title": "二分法：一个都没听过这个名词的人是怎么不小心用上它的",
+      "chars": 3219,
+      "h1": [
+        "思路",
+        "解题过程",
+        "复杂度",
+        "Code"
+      ],
+      "h2": [
+        "第一步：先框住答案的范围",
+        "第二步：给定容量，算算要几天",
+        "第三步：踩了个坑，== 改 <=",
+        "第四步：对半切"
+      ],
+      "h3": [],
+      "steps": [
+        "第一步：先框住答案的范围",
+        "第二步：给定容量，算算要几天",
+        "第三步：踩了个坑，== 改 <=",
+        "第四步：对半切"
+      ],
+      "pitfalls": [
+        "第三步：踩了个坑，== 改 <="
+      ],
+      "fences": [
+        "python3",
+        "typescript"
+      ],
+      "hasProblemQuote": true,
+      "firstQuote": "你选用何种方法解题？",
+      "inlineLatex": 2,
+      "blockLatex": 0,
+      "bullets": 7,
+      "codeBlocks": 2,
+      "boldSpans": 0,
+      "tableRows": 0
+    },
+    {
+      "title": "排序 + 双指针：最符合1KB小脑的解法（虽然打不过哈希表）",
+      "chars": 1378,
+      "h1": [
+        "思路",
+        "解题过程",
+        "复杂度",
+        "Code"
+      ],
+      "h2": [
+        "第一步：打包保留下标",
+        "第二步：按值排序",
+        "第三步：双指针夹逼"
+      ],
+      "h3": [],
+      "steps": [
+        "第一步：打包保留下标",
+        "第二步：按值排序",
+        "第三步：双指针夹逼"
+      ],
+      "pitfalls": [],
+      "fences": [
+        "python3"
+      ],
+      "hasProblemQuote": true,
+      "firstQuote": "排序 + 双指针（两侧夹逼）。",
+      "inlineLatex": 2,
+      "blockLatex": 0,
+      "bullets": 6,
+      "codeBlocks": 3,
+      "boldSpans": 0,
+      "tableRows": 0
+    }
+  ]
+}

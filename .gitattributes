@@ -1,0 +1,10 @@
+# Keep line endings consistent across Windows / macOS / Linux.
+# Without this, `git add` on Windows rewrites every file to CRLF and diffs become noise.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.gif binary
+*.ico binary
+
+package-lock.json -diff linguist-generated

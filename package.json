@@ -1,0 +1,47 @@
+{
+  "name": "leetcode-publisher",
+  "version": "0.1.0",
+  "description": "Publish Markdown as a leetcode.cn solution article — no editor, no manual reformatting. Built for agents: every known pitfall is encoded as an actionable error.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "bin": {
+    "lc": "./bin/lc.mjs",
+    "leetcode-publisher-mcp": "./mcp/server.mjs"
+  },
+  "exports": {
+    ".": "./src/index.mjs",
+    "./style": "./src/style.mjs"
+  },
+  "files": [
+    "bin",
+    "src",
+    "mcp",
+    "styles",
+    "README.md",
+    "SKILL.md"
+  ],
+  "scripts": {
+    "selftest": "node src/roundtrip.mjs",
+    "styles:list": "node bin/lc.mjs style list",
+    "styles:refresh": "node bin/lc.mjs style profile --user yeechin --preset yeechin",
+    "mcp": "node mcp/server.mjs",
+    "mcp:smoke": "node mcp/smoke.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "marked": "^16.0.0",
+    "zod": "^3.23.0"
+  },
+  "keywords": [
+    "leetcode",
+    "力扣",
+    "题解",
+    "solution",
+    "publish",
+    "mcp",
+    "agent"
+  ]
+}

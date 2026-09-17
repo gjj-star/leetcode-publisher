@@ -1,0 +1,23 @@
+# --- credentials: never commit these ---
+.env
+.env.*
+*.session
+session.txt
+.leetcode-session
+.leetcode-csrf
+**/secrets/**
+
+# --- generated artefacts (may contain someone else's content) ---
+out/
+dist/
+*.slate.json
+
+# --- node ---
+node_modules/
+npm-debug.log*
+
+# --- os / editor ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
