@@ -51,6 +51,7 @@ node bin/lc.mjs style profile --official <questionSlug> --pack ./pack
 node bin/lc.mjs style profile --path <文件或目录> --pack ./pack   # 支持 Obsidian front-matter
 node bin/lc.mjs style profile --user a --official b --path c --pack ./pack   # 来源可混用
 node bin/lc.mjs style check <draft.md> --style <预设名>
+node bin/lc.mjs style check <draft.md> --style yeechin --ignore not-x-but-y   # 确实非用该句式不可时
 
 # 发布
 node bin/lc.mjs publish --meta ./meta.json              # 干跑，不发请求
@@ -194,6 +195,29 @@ node bin/lc.mjs publish --meta ./meta.json --publish --draft <已有的 articleS
 5. **干跑**：`publish --meta ...`，看块数、公式数、summary 是否合理。
 6. **向用户确认后再发布**——这是往公开主页发内容。确认后加 `--publish`。
 7. **发布后**：`status=CHECKING` 是正常的，说明过审后再 `verify --against`。
+
+## style check 会拦什么
+
+分两类，**都跑，且第一类与用哪个预设无关**：
+
+**写作口吻类**
+
+- **`not-x-but-y`：`不是…而是…` 及其同族（`并非…而是` / `不在于…而在于` / `与其说…不如说`）**。
+  这是中文写作里最容易被认出「机器写的」句式，社区已经普遍反感，**默认就别用**。
+  改法是按顺序直说：把两半拆成两句，或先陈述结论再补理由。
+  分级是刻意区分的：单个否定（二元对比）报 `warn`；出现多次否定的**排除式**
+  （`不是 A，也不是 B，而是 C`）报 `info`——那是作者真的逐个排除过假设，读起来是推理，可以保留。
+  规则会先屏蔽代码块和行内代码，不会误伤代码里的字符串。
+  确实非用不可时：CLI 加 `--ignore not-x-but-y`，MCP 传 `ignore: ["not-x-but-y"]`。
+
+**力扣专有 markdown 陷阱**
+
+- 单行 `$$...$$`（会被当成行内公式，块级公式的 `$$` 必须独占一行）
+- 代码块语言不在样例常用集合内
+- 缺 `# 复杂度` / 没写时间或空间复杂度 / 完全没有代码块
+- 篇幅明显偏离样例区间
+
+`warn` 和 `info` 不阻断发布，只有 `error` 才让退出码变 2。所以「确实非用不可」的情形不会被卡住。
 
 ## 文风档案能抽什么
 

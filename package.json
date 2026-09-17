@@ -21,14 +21,16 @@
     "mcp",
     "styles",
     "README.md",
-    "SKILL.md"
+    "SKILL.md",
+    "test"
   ],
   "scripts": {
     "selftest": "node src/roundtrip.mjs",
     "styles:list": "node bin/lc.mjs style list",
     "styles:refresh": "node bin/lc.mjs style profile --user yeechin --preset yeechin",
     "mcp": "node mcp/server.mjs",
-    "mcp:smoke": "node mcp/smoke.mjs"
+    "mcp:smoke": "node mcp/smoke.mjs",
+    "test": "node test/lint.test.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",

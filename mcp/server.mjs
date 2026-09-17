@@ -119,12 +119,17 @@ server.tool(
 
 server.tool(
   'lc_style_check',
-  '按文风档案检查题解草稿，返回偏差列表。会捕获力扣专有的 markdown 陷阱（单行 $$ 等）。',
+  '按文风档案检查题解草稿，返回偏差列表。会捕获力扣专有的 markdown 陷阱（单行 $$ 等），' +
+    '以及「不是…而是…」这类容易暴露机器写作的句式。',
   {
     markdown: z.string().describe('草稿的 markdown 全文'),
     style: z.string().describe('预设名（如 yeechin）或 style.json 的内容'),
+    ignore: z
+      .array(z.string())
+      .optional()
+      .describe('要忽略的规则 id，例如 ["not-x-but-y"]。仅在确认该句式此处非用不可时使用。'),
   },
-  async ({ markdown, style }) => {
+  async ({ markdown, style, ignore }) => {
     try {
       let profile;
       if (style.trim().startsWith('{')) {
@@ -134,7 +139,7 @@ server.tool(
         const { readFile } = await import('node:fs/promises');
         profile = JSON.parse(await readFile(p, 'utf8'));
       }
-      const issues = styleCheck(markdown, profile);
+      const issues = styleCheck(markdown, profile, { ignore: ignore || [] });
       if (!issues.length) return text('未发现问题。');
       return text(issues.map((i) => `[${i.level}] ${i.msg}`).join('\n'));
     } catch (e) {

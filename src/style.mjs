@@ -324,10 +324,71 @@ export function styleGuide(p, { sourceLabel = '样例' } = {}) {
 
 // ---------------------------------------------------------------- lint
 
-/** Compare a draft against a profile; returns a list of human/agent-readable findings. */
-export function styleCheck(draft, p) {
-  const md = stripFrontMatter(draft);
+/**
+ * Blank out fenced code blocks and inline code spans, preserving offsets and newlines,
+ * so a rule never fires on something that is code rather than prose.
+ */
+export function maskCode(md) {
+  const blank = (s) => s.replace(/[^\n]/g, ' ');
+  let out = md.replace(/^([ \t]*)(`{3,}|~{3,})[^\n]*\n[\s\S]*?(?:^\1?\2[^\n]*$|$(?![\s\S]))/gm, blank);
+  out = out.replace(/`[^`\n]*`/g, blank);
+  return out;
+}
+
+/**
+ * Rhetorical "not X but Y" constructions. These are the single most recognisable
+ * machine-writing tell in Chinese prose, and they are almost always avoidable — the
+ * two halves can simply be stated in order.
+ *
+ * Severity is deliberately `warn`, not `error`: the construction is occasionally the
+ * clearest way to phrase a real correction, so it must never block a publish.
+ * Pass `{ ignore: ['not-x-but-y'] }` to silence it for a draft.
+ */
+const CONTRAST_RULES = [
+  { id: 'not-x-but-y', label: '「不是…而是…」', re: /不是[^。！？；\n]{1,40}?而是/g },
+  { id: 'not-x-but-y', label: '「并非…而是…」', re: /并非[^。！？；\n]{1,40}?而是/g },
+  { id: 'not-x-but-y', label: '「不在于…而在于…」', re: /不在于[^。！？；\n]{1,40}?而在于/g },
+  { id: 'not-x-but-y', label: '「与其说…不如说…」', re: /与其说[^。！？；\n]{1,40}?不如说/g },
+];
+
+const lineOf = (md, index) => md.slice(0, index).split('\n').length;
+
+// "不是 A，也不是 B，而是 C" is an elimination the author actually walked through, which
+// reads as reasoning; the bare binary "不是 A，而是 B" is the one that reads as machine
+// filler. Both are reported, but only the binary form is a warning.
+const negationCount = (span) => (span.match(/不是|并非|不在于/g) || []).length;
+
+export function contrastCheck(md, { ignore = [] } = {}) {
+  const active = CONTRAST_RULES.filter((r) => !ignore.includes(r.id));
+  if (!active.length) return [];
+  const masked = maskCode(md);
   const issues = [];
+  for (const rule of active) {
+    for (const m of masked.matchAll(rule.re)) {
+      const plain = md.slice(m.index, m.index + m[0].length);
+      const line = lineOf(masked, m.index);
+      const enumeration = negationCount(plain) > 1;
+      issues.push({
+        level: enumeration ? 'info' : 'warn',
+        rule: rule.id,
+        line,
+        msg: enumeration
+          ? `${rule.label} 第 ${line} 行：\`${plain}\`\n` +
+            '      这是「排除式」，前面确实逐个否掉过若干假设时读起来是推理，可以保留。\n' +
+            '      只有当它只是给单句换个说法时，才需要像二元对比那样改写。'
+          : `${rule.label} 第 ${line} 行：\`${plain}\`\n` +
+            '      这是最容易被认出「机器写的」句式。多数情况可以按顺序直说：把两半拆成两句话，' +
+            '或直接陈述结论再补理由。若这里确实非用不可，忽略此条即可。',
+      });
+    }
+  }
+  return issues;
+}
+
+/** Compare a draft against a profile; returns a list of human/agent-readable findings. */
+export function styleCheck(draft, p, { ignore = [] } = {}) {
+  const md = stripFrontMatter(draft);
+  const issues = [...contrastCheck(md, { ignore })];
   const h1 = [...md.matchAll(/^#\s+(.+)$/gm)].map((m) => m[1].trim());
   const h2 = [...md.matchAll(/^##\s+(.+)$/gm)].map((m) => m[1].trim());
 

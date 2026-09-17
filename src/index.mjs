@@ -10,4 +10,5 @@ export {
 export {
   collectSources, profileStyle, styleGuide, styleCheck, writeStylePack,
   stripFrontMatter, resolveStylePath, listStylePresets, STYLES_DIR,
+  contrastCheck, maskCode,
 } from './style.mjs';

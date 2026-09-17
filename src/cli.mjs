@@ -23,7 +23,7 @@ function parseArgs(argv) {
   const multi = {};
   const takesValue = new Set([
     'session', 'session-file', 'out', 'o', 'question', 'title', 'tags', 'retry', 'delay',
-    'draft', 'user', 'official', 'path', 'style', 'pack', 'max', 'meta', 'against', 'preset',
+    'draft', 'user', 'official', 'path', 'style', 'pack', 'max', 'meta', 'against', 'preset', 'ignore',
   ]);
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
@@ -173,8 +173,9 @@ async function cmdStyle(flags) {
     const stylePath = await resolveStylePath(flags.style);
     const draft = await readFile(draftPath, 'utf8');
     const profile = JSON.parse(await readFile(stylePath, 'utf8'));
-    const issues = styleCheck(draft, profile);
-    rule(`文风检查（风格: ${flags.style}）`);
+    const ignore = flags.ignore ? flags.ignore.split(',').map((s) => s.trim()).filter(Boolean) : [];
+    const issues = styleCheck(draft, profile, { ignore });
+    rule(`文风检查（风格: ${flags.style}${ignore.length ? `，忽略 ${ignore.join(', ')}` : ''}）`);
     if (!issues.length) say('  未发现问题。');
     const order = { error: 0, warn: 1, info: 2 };
     for (const i of [...issues].sort((a, b) => order[a.level] - order[b.level])) say(`  [${i.level}] ${i.msg}`);
@@ -411,8 +412,9 @@ const HELP = `lc — 把 Markdown 发成力扣题解（仅支持 leetcode.cn）
                                        --user <slug>          参照某用户的题解
                                        --official <题slug>    参照官方题解
                                        --path <文件或目录>     参照本地 markdown
-  lc style check <draft.md> --style <预设名 或 style.json 路径>
-                                     检查草稿是否符合文风档案
+  lc style check <draft.md> --style <预设名 或 style.json 路径> [--ignore 规则id,...]
+                                     检查草稿是否符合文风档案。
+                                     规则 id: not-x-but-y（「不是…而是…」句式）
 
   lc publish <article.md> --question <questionSlug> --title "标题"
              [--tags a,b] [--publish] [--retry N] [--delay 秒] [--draft <草稿slug>]
