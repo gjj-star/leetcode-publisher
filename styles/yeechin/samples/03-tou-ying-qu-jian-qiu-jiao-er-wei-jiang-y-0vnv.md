@@ -46,7 +46,7 @@ y 轴照抄一遍就行。
 
 # Code
 
-```python3
+```python3 []
 class Solution:
     def isRectangleOverlap(self, rec1: List[int], rec2: List[int]) -> bool:
         left = max(rec1[0], rec2[0])     # max(x1, a1)
@@ -57,7 +57,7 @@ class Solution:
         return left < right and below < above
 ```
 
-```typescript
+```typescript []
 function isRectangleOverlap(rec1: number[], rec2: number[]): boolean {
     const left = Math.max(rec1[0], rec2[0]);
     const right = Math.min(rec1[2], rec2[2]);

@@ -124,7 +124,23 @@ publishSolutionArticle(data: {title, content: "", slateValue, enableReward: fals
   dp[i] = dp[i-1] + 1
   $$
   ```
-- **代码块支持标签名**（多标签页代码块）：```` ```python3 [暴力] ````
+- **代码块支持自定义标签名**（多标签页代码块）。写法是在围栏语言后面加方括号：
+
+  ````
+  ```python3 [暴力]
+  ...
+  ```
+
+  ```python3 [优化]
+  ...
+  ```
+  ````
+
+  规则：**相邻的、带方括号的围栏会合并成一个 CodeBlock 的多个 CodeTab**，力扣渲染成可切换的标签页。
+  方括号就是「这一块是一个标签页」的开关；不带方括号的围栏保持独立代码块。
+  标签页可以无名，写作 `[]`（例如 python3 和 typescript 并排但不起名）。
+  标签名只有在**同一个 CodeBlock 有 2 个以上 CodeTab** 时才可见——单个 CodeBlock 只显示语言，
+  所以想显示名字就必须用这个写法，不能写成几个独立代码块。
 - `summary` 由力扣按「正文纯文本前 250 字」生成，`thumbnail` 取第一个图片——工具会照算。
 - 编辑器**只读 `text/plain`，不读 `text/html`**，所以粘贴富文本会丢格式。
 

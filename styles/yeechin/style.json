@@ -1,7 +1,7 @@
 {
   "samples": 7,
   "generatedFrom": "leetcode 用户 yeechin",
-  "generatedAt": "2026-09-17T06:14:56.512Z",
+  "generatedAt": "2026-09-17T07:41:34.409Z",
   "titles": [
     "动态规划 + 前缀和：从“枚举间距”一步步推到 dp[n][k]",
     "贪心（暴力遍历及优化）",
@@ -68,9 +68,9 @@
   },
   "hasProblemQuote": 7,
   "length": {
-    "medianChars": 1477,
+    "medianChars": 1483,
     "minChars": 1238,
-    "maxChars": 3219
+    "maxChars": 3225
   },
   "codeLangs": [
     {
@@ -87,7 +87,7 @@
     "bullets": 6.6,
     "inlineLatex": 8.7,
     "blockLatex": 0.9,
-    "boldSpans": 3.4,
+    "boldSpans": 3.1,
     "tables": 0
   },
   "voice": [
@@ -157,7 +157,7 @@
     },
     {
       "title": "贪心（暴力遍历及优化）",
-      "chars": 2959,
+      "chars": 2929,
       "h1": [
         "思路",
         "解题过程",
@@ -195,12 +195,12 @@
       "blockLatex": 0,
       "bullets": 4,
       "codeBlocks": 4,
-      "boldSpans": 11,
+      "boldSpans": 9,
       "tableRows": 0
     },
     {
       "title": "投影 + 区间求交（二维降一维）",
-      "chars": 1477,
+      "chars": 1483,
       "h1": [
         "思路",
         "解题过程",
@@ -304,7 +304,7 @@
     },
     {
       "title": "二分法：一个都没听过这个名词的人是怎么不小心用上它的",
-      "chars": 3219,
+      "chars": 3225,
       "h1": [
         "思路",
         "解题过程",

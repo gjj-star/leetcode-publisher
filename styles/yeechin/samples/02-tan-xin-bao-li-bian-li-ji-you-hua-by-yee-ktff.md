@@ -71,9 +71,7 @@ b c c b
 
 # Code
 
-**暴力** (`python3`)
-
-```python3
+```python3 [暴力]
 class Solution:
     def maxPalindromes(self, s: str, k: int) -> int:
         n = len(s)
@@ -100,9 +98,7 @@ class Solution:
         return coun
 ```
 
-**优化** (`python3`)
-
-```python3
+```python3 [优化]
 class Solution:
     def maxPalindromes(self, s: str, k: int) -> int:
         n = len(s)

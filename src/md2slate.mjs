@@ -100,16 +100,21 @@ function inline(tokens, inherited = {}) {
   return out.length ? out : [{ text: '' }];
 }
 
-// split a code fence info string: "python3 [暴力]" -> {language, name}
+// split a code fence info string: "python3 [暴力]" -> {language, name, isTab}
+//
+// The bracketed suffix is the opt-in marker meaning "this fence is a TAB of a multi-tab
+// CodeBlock". `[]` is a tab with no label — LeetCode allows unnamed tabs (e.g. a python3
+// and a typescript tab side by side), and they still need to stay one CodeBlock.
 function fenceInfo(info) {
   const raw = (info || '').trim();
-  if (!raw) return { language: 'plainText', name: '' };
   const nameMatch = raw.match(/\[(.*?)\]/);
-  const name = nameMatch ? nameMatch[1].trim() : '';
   const lang = raw.split(' ')[0].toLowerCase();
   const language = !lang || lang === 'text' || lang === 'plaintext' ? 'plainText' : lang;
-  return { language, name };
+  return { language, name: nameMatch ? nameMatch[1].trim() : '', isTab: !!nameMatch };
 }
+
+// Only fences explicitly marked as tabs are ever merged.
+const isTabFence = (token) => fenceInfo(token.lang).isTab;
 
 function codeBlock(token) {
   const { language, name } = fenceInfo(token.lang);
@@ -122,13 +127,65 @@ function codeBlock(token) {
   };
 }
 
+/**
+ * One CodeBlock holding several CodeTabs — this is what makes LeetCode render a tab bar.
+ * A single-tab CodeBlock shows the language instead and the tab name is invisible, so
+ * adjacent tab fences must be merged rather than emitted as separate blocks.
+ */
+function multiTabCodeBlock(tokens) {
+  return {
+    type: 'CodeBlock',
+    activeTabIndex: 0,
+    children: tokens.map((t) => {
+      const { language, name } = fenceInfo(t.lang);
+      return {
+        type: 'CodeTab',
+        language,
+        name,
+        children: [{ text: (t.text ?? '').replace(/\n+$/, '') }],
+        slateId: slateId(),
+      };
+    }),
+    slateId: slateId(),
+  };
+}
+
 // --- block tokens -> Slate elements ---
 function blocks(tokens, depth = 0) {
   const out = [];
-  for (const t of tokens || []) {
+  const list = tokens || [];
+  for (let i = 0; i < list.length; i++) {
+    const t = list[i];
     switch (t.type) {
       case 'space':
         break;
+      case 'code': {
+        // Run of adjacent tab fences -> one multi-tab CodeBlock. Unmarked fences are left
+        // alone so ordinary code stays an ordinary code block.
+        if (isTabFence(t)) {
+          const run = [t];
+          let j = i + 1;
+          while (j < list.length) {
+            if (list[j].type === 'space') {
+              j++;
+              continue;
+            }
+            if (list[j].type === 'code' && isTabFence(list[j])) {
+              run.push(list[j]);
+              j++;
+              continue;
+            }
+            break;
+          }
+          if (run.length > 1) {
+            out.push(multiTabCodeBlock(run));
+            i = j - 1;
+            break;
+          }
+        }
+        out.push(codeBlock(t));
+        break;
+      }
       case 'heading': {
         const d = Math.min(Math.max(t.depth, 1), 6);
         out.push({ type: 'Heading' + d, children: inline(t.tokens), slateId: slateId() });
@@ -174,9 +231,6 @@ function blocks(tokens, depth = 0) {
         out.push({ type, children: items, slateId: slateId() });
         break;
       }
-      case 'code':
-        out.push(codeBlock(t));
-        break;
       case 'hr':
         out.push({ type: 'HorizontalRule', children: [{ text: '' }], slateId: slateId() });
         break;

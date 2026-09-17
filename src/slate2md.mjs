@@ -36,14 +36,16 @@ export function inline(nodes = []) {
 
 function codeBlock(node) {
   const tabs = (node.children || []).filter((c) => Array.isArray(c.children));
-  const parts = [];
-  for (const tab of tabs) {
-    const code = (tab.children || []).map((c) => c.text ?? '').join('').replace(/\n+$/, '');
-    const lang = tab.language && tab.language !== 'plainText' ? tab.language : '';
-    if (tabs.length > 1 && tab.name) parts.push(`**${tab.name}**${lang ? ` (\`${lang}\`)` : ''}`);
-    parts.push('```' + lang + '\n' + code + '\n```');
-  }
-  return parts.join('\n\n');
+  const multi = tabs.length > 1;
+  return tabs
+    .map((tab) => {
+      const code = (tab.children || []).map((c) => c.text ?? '').join('').replace(/\n+$/, '');
+      const lang = tab.language && tab.language !== 'plainText' ? tab.language : '';
+      // The bracketed suffix marks a fence as a TAB of a multi-tab CodeBlock; `[]` keeps an
+      // unnamed tab (python3 + typescript side by side) inside the same block on re-parse.
+      return '```' + lang + (multi ? ` [${tab.name || ''}]` : '') + '\n' + code + '\n```';
+    })
+    .join('\n\n');
 }
 
 function renderBlock(n, depth) {

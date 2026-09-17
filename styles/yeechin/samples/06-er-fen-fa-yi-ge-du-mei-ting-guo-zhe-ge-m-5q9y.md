@@ -54,7 +54,7 @@
 
 # Code
 
-```python3
+```python3 []
 class Solution:
     def shipWithinDays(self, weights: List[int], days: int) -> int:
         # 判断当前船容量 capacity 是否能在 days 天内完成运输
@@ -107,7 +107,7 @@ class Solution:
         return left
 ```
 
-```typescript
+```typescript []
 function shipWithinDays(weights: number[], days: number): number {
 
     // 判断容量 capacity 是否可行

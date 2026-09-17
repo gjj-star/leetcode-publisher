@@ -14,10 +14,11 @@ import { renderNodes } from './slate2md.mjs';
 const isLeafText = (n) => n && typeof n === 'object' && typeof n.text === 'string' && !Array.isArray(n.children);
 const LIST_TYPES = new Set(['BulletedList', 'OrderedList']);
 
-// Normalisations, all artefacts of slate->md->slate rather than converter bugs:
+// Normalisations, all genuine slate<->markdown differences rather than converter bugs:
 //   - list grouping: "- a" <blank> "- b" is one loose list for marked, the site stored two
 //   - empty paragraphs cannot survive a markdown round-trip (they carry no content)
-//   - multi-tab code blocks render as N fences and re-parse as N CodeBlocks
+// Multi-tab code blocks are deliberately NOT normalised: fences carry a [name] suffix and
+// merge back into one CodeBlock, so that case now has to match exactly.
 function canon(nodes) {
   const out = [];
   for (const n of nodes || []) {
@@ -38,10 +39,6 @@ function canon(nodes) {
   }
   return out;
 }
-
-const collapseAdjacentCode = (sig) => sig.filter((s, i) => !(s === 'Code|' && sig[i - 1] === 'Code|'));
-const cleanMd = (md) =>
-  md.split('\n').filter((l) => !/^\*\*.+\*\* \(`[a-z0-9]+`\)$/.test(l.trim())).join('\n');
 
 async function collect(dir) {
   const files = [];
@@ -96,9 +93,9 @@ for (const f of files.sort()) {
   if (!Array.isArray(original) || !original.length) continue;
   used++;
 
-  const back = markdownToSlate(cleanMd(renderNodes(original)));
-  const a = collapseAdjacentCode(canon(original));
-  const b = collapseAdjacentCode(canon(back));
+  const back = markdownToSlate(renderNodes(original));
+  const a = canon(original);
+  const b = canon(back);
   const n = Math.max(a.length, b.length);
   let m = 0;
   const diffs = [];
