@@ -42,12 +42,21 @@ node bin/lc.mjs help
 浏览器登录 leetcode.cn → `F12` → Application → Cookies → `https://leetcode.cn` → 复制 `LEETCODE_SESSION` 的值。
 （它是 httpOnly，`document.cookie` 读不到。）
 
-三种给法，优先级从高到低：
+四种给法，优先级从高到低：
 
 ```bash
---session "<TOKEN>"              # 一次性，推荐 agent 用，什么都不落盘
+--session "<TOKEN>"              # 一次性，什么都不落盘
+--session-file <路径>             # 从文件读；支持裸 token，也支持 JSON 配置
 LEETCODE_SESSION=<TOKEN>         # 环境变量
 lc auth login                    # 交互式存到 ~/.leetcode-session（0600 权限）
+```
+
+`--session-file` 可以指向任意 JSON 配置（例如 MCP 的 `mcp.json`）：它会在整棵树里递归查找
+`LEETCODE_SESSION` 键，取到就用。这样 token **不需要经过 shell 参数或对话记录**，只在进程内读取。
+输出里只回报来源路径，例如：
+
+```
+token 来源: ~/.workbuddy/mcp.json → $.mcpServers.leetcode.env.LEETCODE_SESSION
 ```
 
 token **不会被写入仓库、不会被打印**，输出里有自动脱敏。

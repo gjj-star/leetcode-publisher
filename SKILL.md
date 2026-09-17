@@ -23,8 +23,20 @@ description: 把 Markdown 发布成力扣（leetcode.cn）题解，或拉取/归
 node bin/lc.mjs publish --meta ./meta.json --publish --session "<TOKEN>"
 ```
 
-优先级：`--session` > 环境变量 `LEETCODE_SESSION` > `~/.leetcode-session`（由 `lc auth login` 创建）。
+优先级：`--session` > `--session-file` > 环境变量 `LEETCODE_SESSION` > `~/.leetcode-session`（由 `lc auth login` 创建）。
 工具会自动脱敏，token 不会出现在任何输出里。
+
+**如果用户的机器上已经有配置文件存着 token，优先用 `--session-file` 指过去**，
+这样 token 不必经过 shell 或对话记录，只在进程内读取：
+
+```bash
+node bin/lc.mjs publish --meta ./meta.json --publish \
+  --session-file "~/.workbuddy/mcp.json"
+```
+
+`--session-file` 既能读裸 token 文件，也能读 JSON（如 MCP 配置文件）——它会在整棵树里递归找
+`LEETCODE_SESSION` 这类键，并只回报来源路径（如 `... → $.mcpServers.leetcode.env.LEETCODE_SESSION`），
+不回报值。鉴权失败时再用 `--session` 直接传。
 
 ## 命令
 
