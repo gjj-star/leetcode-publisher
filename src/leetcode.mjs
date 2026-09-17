@@ -136,15 +136,15 @@ export async function getOfficialSolution(client, titleSlug) {
  *   2. publishSolutionArticle  -> publishes that draft (needs the slug from step 1)
  * Skipping step 1 makes the server answer 内容不存在.
  */
-export async function createDraft(client, { questionSlug, title, tags, slateValue }) {
-  const d = await client.request(
-    AUTO_SAVE,
-    { data: { questionSlug, title, tags, content: '', slateValue } },
-    { label: 'autoSaveSolutionArticle' }
-  );
+export async function createDraft(client, { questionSlug, title, tags, slateValue, slug }) {
+  const data = { questionSlug, title, tags, content: '', slateValue };
+  // Passing an existing slug is how the editor reopens a published article for editing:
+  // autosave rewrites it, then publish republishes the same slug.
+  if (slug) data.slug = slug;
+  const d = await client.request(AUTO_SAVE, { data }, { label: 'autoSaveSolutionArticle' });
   const r = d.autoSaveSolutionArticle;
   if (!r?.article?.slug) {
-    throw new Error(`建草稿失败：ok=${r?.ok} error=${r?.error ?? '(空)'}`);
+    throw new Error(`保存${slug ? '（更新）' : '（新建草稿）'}失败：ok=${r?.ok} error=${r?.error ?? '(空)'}`);
   }
   return r.article;
 }

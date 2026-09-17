@@ -57,6 +57,9 @@ node bin/lc.mjs publish --meta ./meta.json              # 干跑，不发请求
 node bin/lc.mjs publish --meta ./meta.json --publish    # 真发
 node bin/lc.mjs publish --meta ./meta.json --publish --retry 4 --delay 90
 node bin/lc.mjs verify <articleSlug> --against <draft.md>
+
+# 修改一篇已发布的题解：改完 markdown 后用 --draft 带上它自己的 slug 重发
+node bin/lc.mjs publish --meta ./meta.json --publish --draft <articleSlug>
 ```
 
 `meta.json`：
@@ -128,7 +131,25 @@ publishSolutionArticle(data: {title, content: "", slateValue, enableReward: fals
 回读会得到空值或 `发生未知错误`。这是正常的，不是失败。
 等状态变成 `PUBLISHED` 再 `lc verify`。过审通常几分钟到几小时。
 
-### 6. Markdown 的力扣专有规则
+### 6. 改已发布的文章要用 publish，不能走 autosave
+
+想修改一篇已经 `PUBLISHED` 的题解时，**不要用 `autoSaveSolutionArticle` 带上它的 slug**——服务端会拒绝：
+
+```
+autoSaveSolutionArticle: 已发布的文章不能保存草稿
+```
+
+正确做法是直接用 `publishSolutionArticle` 带上**同一个 slug**，它会原地覆盖那篇文章：
+
+```bash
+node bin/lc.mjs publish --meta ./meta.json --publish --draft <已有的 articleSlug>
+```
+
+`--draft <slug>` 就是「跳过建草稿，目标指向这个 slug」。文章会回到 `CHECKING` 重新审核，
+过审后内容即更新，slug 和链接都不变。`publishSolutionArticle` 本身就携带完整正文，
+所以不需要先写入草稿。
+
+### 7. Markdown 的力扣专有规则
 
 - **块级公式的 `$$` 必须独占一行**，否则被当作行内公式：
   ```
@@ -156,7 +177,7 @@ publishSolutionArticle(data: {title, content: "", slateValue, enableReward: fals
 - `summary` 由力扣按「正文纯文本前 250 字」生成，`thumbnail` 取第一个图片——工具会照算。
 - 编辑器**只读 `text/plain`，不读 `text/html`**，所以粘贴富文本会丢格式。
 
-### 7. 不要试图枚举 schema
+### 8. 不要试图枚举 schema
 
 `__schema` 内省被禁用。
 字段名照抄 `src/leetcode.mjs`，那是从力扣前端 bundle 里挖出来的。

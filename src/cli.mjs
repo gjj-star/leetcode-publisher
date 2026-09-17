@@ -305,10 +305,13 @@ async function cmdPublish(flags) {
       return problems.length ? 2 : 0;
     }
 
-    rule('第 1 步：建草稿');
+    rule(flags.draft ? '第 1 步：复用已有 slug（更新）' : '第 1 步：建草稿');
     let slug = flags.draft;
     if (slug) {
-      say(`  复用草稿 ${slug}`);
+      // Do NOT autosave here: the server answers 已发布的文章不能保存草稿 for a published
+      // article. publishSolutionArticle carries the full body anyway, so pointing it at an
+      // existing slug is what updates (or republishes) that article.
+      say(`  目标 ${slug}`);
     } else {
       const draft = await createDraft(client, { questionSlug, title, tags, slateValue });
       slug = draft.slug;
